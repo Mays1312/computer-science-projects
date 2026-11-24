@@ -45,3 +45,7 @@ Graphics Techniques
 The scene uses procedural geometry and solid colours rather than image textures. Building windows and road details are represented with geometry. The project demonstrates WebGL2, GLSL shaders, 3D transformations, lighting, camera movement, animation, and user interaction.
 
 
+<img width="1160" height="800" alt="image" src="https://github.com/user-attachments/assets/bdc0432a-5ce0-4315-a5f7-b237db14682a" />
+
+<img width="1114" height="791" alt="image" src="https://github.com/user-attachments/assets/ef9fb7c6-9c13-408f-bfaf-a83e4bcce0e6" />
+
