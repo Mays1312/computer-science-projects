@@ -1,0 +1,83 @@
+
+<!DOCTYPE html> <!-- Defines the HTML document -->
+<html lang="en"> <!-- Sets the page language to English -->
+<head> <!-- Starts the page settings -->
+  <meta charset="UTF-8"> <!-- Supports different characters -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Fits the page to the screen -->
+  <title>City Street Scene - WebGL2 Project</title> <!-- Sets the page title -->
+</head> <!-- Ends the page settings -->
+
+<body> <!-- Starts the page content -->
+
+<!-- Creates the area for the 3D scene -->
+<canvas id="gl-canvas" width="1100" height="680">
+  Your browser does not support the HTML canvas element. <!-- Message if canvas is not supported -->
+</canvas> <!-- Ends the canvas -->
+
+<p> <!-- Starts a paragraph -->
+  <button id="pauseButton">Pause</button> <!-- Button to pause the scene -->
+  <button id="resetButton">Reset</button> <!-- Button to reset the scene -->
+  <button id="dayNightButton">Switch to Night</button> <!-- Button to change to night -->
+  <span id="status" hidden></span> <!-- Area for showing status -->
+</p> <!-- Ends the paragraph -->
+
+<!-- Shows the camera controls -->
+<p>Camera controls: W / ↑ move forward, S / ↓ move backward, A / ← move left, D / → move right.</p>
+
+<!-- Starts the vertex shader -->
+<script id="vertex-shader" type="x-shader/x-vertex">#version 300 es
+in vec4 aPosition; // Gets the vertex position
+in vec3 aNormal; // Gets the vertex normal
+
+uniform mat4 uModel; // Stores the object position
+uniform mat4 uView; // Stores the camera view
+uniform mat4 uProjection; // Stores the camera view shape
+
+out vec3 vWorldPosition; // Sends the world position
+out vec3 vNormal; // Sends the normal to the next shader
+
+void main() { // Starts the shader
+    vec4 worldPosition = uModel * aPosition; // Finds the world position
+    vWorldPosition = worldPosition.xyz; // Saves the world position
+
+    // Calculates the correct light direction
+    vNormal = normalize(transpose(inverse(mat3(uModel))) * aNormal);
+
+    gl_Position = uProjection * uView * worldPosition; // Sets the screen position
+}
+</script> <!-- Ends the vertex shader -->
+
+<!-- Starts the fragment shader -->
+<script id="fragment-shader" type="x-shader/x-fragment">#version 300 es
+precision highp float; // Uses accurate color values
+
+in vec3 vWorldPosition; // Gets the world position
+in vec3 vNormal; // Gets the normal direction
+
+uniform vec4 uColor; // Gets the object color
+uniform vec3 uLightDirection; // Gets the light direction
+uniform vec3 uEyePosition; // Gets the camera position
+
+out vec4 fragColor; // Sends the final color
+
+void main() { // Starts the shader
+    vec3 N = normalize(vNormal); // Sets the normal direction
+    vec3 L = normalize(-uLightDirection); // Sets the light direction
+    vec3 V = normalize(uEyePosition - vWorldPosition); // Finds the camera direction
+    vec3 H = normalize(L + V); // Finds the middle direction
+
+    float diffuse = max(dot(N, L), 0.0); // Calculates direct light
+    float ambient = 0.42; // Sets the background light
+    float specular = pow(max(dot(N, H), 0.0), 28.0) * 0.18; // Adds shiny light
+
+    vec3 color = uColor.rgb * (ambient + diffuse * 0.72) + vec3(specular); // Mixes the colors and light
+    fragColor = vec4(color, uColor.a); // Sets the final object color
+}
+</script> <!-- Ends the fragment shader -->
+
+<script src="Common/MVnew.js"></script> <!-- Loads the math functions -->
+<script src="Common/initShaders.js"></script> <!-- Loads the shader functions -->
+<script src="main.js"></script> <!-- Loads the main project code -->
+
+</body> <!-- Ends the page content -->
+</html> <!-- Ends the HTML document -->
